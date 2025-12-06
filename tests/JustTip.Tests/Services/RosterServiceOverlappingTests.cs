@@ -14,7 +14,7 @@ public class RosterServiceOverlappingTests
     private readonly RosterService _sut;
 
     private readonly Employee _testEmployee = new() { Id = 1, Name = "John Doe" };
-    private readonly DateOnly _testDate = new(2025, 1, 15);
+    private readonly DateOnly _testDate = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
 
     public RosterServiceOverlappingTests()
     {

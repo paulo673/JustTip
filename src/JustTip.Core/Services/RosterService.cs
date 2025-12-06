@@ -45,6 +45,7 @@ public class RosterService(IShiftRepository shiftRepository, IEmployeeRepository
     public async Task<ShiftDto> CreateShiftAsync(CreateShiftRequest request)
     {
         ValidateTimeRange(request.StartTime, request.EndTime);
+        ValidateNotRetroactive(request.Date);
 
         var employee = await employeeRepository.GetByIdAsync(request.EmployeeId)
             ?? throw new ArgumentException($"Employee with ID {request.EmployeeId} not found.");
@@ -88,6 +89,9 @@ public class RosterService(IShiftRepository shiftRepository, IEmployeeRepository
         var shift = await shiftRepository.GetByIdAsync(id)
             ?? throw new ArgumentException($"Shift with ID {id} not found.");
 
+        ValidateNotRetroactive(shift.Date);
+        ValidateNotRetroactive(request.Date);
+
         var employee = await employeeRepository.GetByIdAsync(request.EmployeeId)
             ?? throw new ArgumentException($"Employee with ID {request.EmployeeId} not found.");
 
@@ -126,6 +130,8 @@ public class RosterService(IShiftRepository shiftRepository, IEmployeeRepository
         var shift = await shiftRepository.GetByIdAsync(id)
             ?? throw new ArgumentException($"Shift with ID {id} not found.");
 
+        ValidateNotRetroactive(shift.Date);
+
         await shiftRepository.DeleteAsync(shift);
     }
 
@@ -134,6 +140,15 @@ public class RosterService(IShiftRepository shiftRepository, IEmployeeRepository
         if (startTime >= endTime)
         {
             throw new ArgumentException("StartTime must be before EndTime.");
+        }
+    }
+
+    private static void ValidateNotRetroactive(DateOnly date)
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        if (date < today)
+        {
+            throw new RetroactiveShiftException();
         }
     }
 }

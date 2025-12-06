@@ -14,7 +14,7 @@ public class ShiftOverlapScenariosTests
     private readonly RosterService _sut;
 
     private readonly Employee _testEmployee = new() { Id = 1, Name = "John Doe" };
-    private readonly DateOnly _testDate = new(2025, 1, 15);
+    private readonly DateOnly _testDate = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
 
     public ShiftOverlapScenariosTests()
     {
@@ -121,8 +121,8 @@ public class ShiftOverlapScenariosTests
     [Fact]
     public async Task CreateShiftAsync_SameEmployeeDifferentDays_ShouldNotConflict()
     {
-        var day1 = new DateOnly(2025, 1, 15);
-        var day2 = new DateOnly(2025, 1, 16);
+        var day1 = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
+        var day2 = DateOnly.FromDateTime(DateTime.Today.AddDays(8));
 
         var request1 = new CreateShiftRequest(
             EmployeeId: _testEmployee.Id,

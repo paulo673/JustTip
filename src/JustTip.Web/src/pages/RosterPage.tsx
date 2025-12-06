@@ -4,16 +4,31 @@ import { startOfWeek } from 'date-fns'
 import { Navbar } from '../components/layout/Navbar'
 import { WeekNavigator } from '../components/roster/WeekNavigator'
 import { RosterGrid } from '../components/roster/RosterGrid'
+import { ShiftDialog } from '../components/roster/ShiftDialog'
 import { useRoster } from '../hooks/useRoster'
+import type { ShiftDto } from '../types/roster'
 
 export function RosterPage() {
   const [selectedDate, setSelectedDate] = useState(() => new Date())
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedShift, setSelectedShift] = useState<ShiftDto | null>(null)
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 })
 
   const { data, isLoading, isError, error } = useRoster(selectedDate)
 
   const handleAddShift = () => {
-    console.log('Add Shift clicked - Modal would open here')
+    setSelectedShift(null)
+    setIsDialogOpen(true)
+  }
+
+  const handleShiftClick = (shift: ShiftDto) => {
+    setSelectedShift(shift)
+    setIsDialogOpen(true)
+  }
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false)
+    setSelectedShift(null)
   }
 
   return (
@@ -56,9 +71,20 @@ export function RosterPage() {
         )}
 
         {data && (
-          <RosterGrid employees={data.employees} weekStart={weekStart} />
+          <RosterGrid
+            employees={data.employees}
+            weekStart={weekStart}
+            onShiftClick={handleShiftClick}
+          />
         )}
       </main>
+
+      <ShiftDialog
+        isOpen={isDialogOpen}
+        onClose={handleCloseDialog}
+        shift={selectedShift}
+        defaultDate={selectedDate}
+      />
     </div>
   )
 }

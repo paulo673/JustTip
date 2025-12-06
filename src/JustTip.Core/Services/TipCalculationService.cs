@@ -76,4 +76,11 @@ public class TipCalculationService(IShiftRepository shiftRepository, ITipReposit
             await tipRepository.UpsertDailyTipAsync(tip.Date, tip.Amount);
         }
     }
+
+    public async Task<IReadOnlyList<DailyTipInputDto>> GetDailyTipsAsync(DateOnly weekStart)
+    {
+        var weekEnd = weekStart.AddDays(6);
+        var tips = await tipRepository.GetTipsByDateRangeAsync(weekStart, weekEnd);
+        return tips.Select(t => new DailyTipInputDto(t.Date, t.Amount)).ToList();
+    }
 }

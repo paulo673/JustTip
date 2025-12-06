@@ -41,6 +41,10 @@ public class RosterController(IRosterService rosterService) : ControllerBase
         {
             return BadRequest(new { error = ex.Message });
         }
+        catch (RetroactiveShiftException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
         catch (ArgumentException ex)
         {
             return BadRequest(new { error = ex.Message });
@@ -59,6 +63,10 @@ public class RosterController(IRosterService rosterService) : ControllerBase
         {
             return BadRequest(new { error = ex.Message });
         }
+        catch (RetroactiveShiftException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
         catch (ArgumentException ex)
         {
             return BadRequest(new { error = ex.Message });
@@ -72,6 +80,10 @@ public class RosterController(IRosterService rosterService) : ControllerBase
         {
             await rosterService.DeleteShiftAsync(id);
             return NoContent();
+        }
+        catch (RetroactiveShiftException ex)
+        {
+            return BadRequest(new { error = ex.Message });
         }
         catch (ArgumentException ex)
         {

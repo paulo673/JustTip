@@ -6,4 +6,5 @@ public interface ITipCalculationService
 {
     Task<WeeklyPayoutDto> CalculateWeeklyPayoutAsync(DateOnly weekStart);
     Task SaveDailyTipsAsync(IEnumerable<DailyTipInputDto> tips);
+    Task<IReadOnlyList<DailyTipInputDto>> GetDailyTipsAsync(DateOnly weekStart);
 }

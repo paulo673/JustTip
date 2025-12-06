@@ -1,4 +1,4 @@
-import { format, isSameDay, parseISO, isToday } from 'date-fns'
+import { format, isSameDay, parseISO, isToday, isBefore, startOfDay } from 'date-fns'
 import { cn } from '../../lib/utils'
 import { getWeekDays } from '../../hooks/useRoster'
 import type { EmployeeRosterDto, ShiftDto } from '../../types/roster'
@@ -6,6 +6,7 @@ import type { EmployeeRosterDto, ShiftDto } from '../../types/roster'
 interface RosterGridProps {
   employees: EmployeeRosterDto[]
   weekStart: Date
+  onShiftClick?: (shift: ShiftDto) => void
 }
 
 const avatarColors = [
@@ -39,9 +40,16 @@ function Avatar({ name, index }: { name: string; index: number }) {
   )
 }
 
-function ShiftPill({ shift }: { shift: ShiftDto }) {
+function ShiftPill({
+  shift,
+  onClick,
+}: {
+  shift: ShiftDto
+  onClick?: (shift: ShiftDto) => void
+}) {
   const startHour = parseInt(shift.startTime.split(':')[0], 10)
   const isEvening = startHour >= 17
+  const isPast = isBefore(startOfDay(parseISO(shift.date)), startOfDay(new Date()))
 
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(':')
@@ -49,20 +57,32 @@ function ShiftPill({ shift }: { shift: ShiftDto }) {
   }
 
   return (
-    <div
+    <button
+      type="button"
+      onClick={() => onClick?.(shift)}
       className={cn(
-        "px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap",
+        "px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-all",
         isEvening
-          ? "bg-slate-100 text-slate-700"
-          : "bg-blue-50 text-blue-700"
+          ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+          : "bg-blue-50 text-blue-700 hover:bg-blue-100",
+        isPast && "opacity-60",
+        onClick && "cursor-pointer"
       )}
     >
       {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
-    </div>
+    </button>
   )
 }
 
-function DayCell({ shifts, date }: { shifts: ShiftDto[]; date: Date }) {
+function DayCell({
+  shifts,
+  date,
+  onShiftClick,
+}: {
+  shifts: ShiftDto[]
+  date: Date
+  onShiftClick?: (shift: ShiftDto) => void
+}) {
   const dayShifts = shifts.filter((shift) => {
     const shiftDate = parseISO(shift.date)
     return isSameDay(shiftDate, date)
@@ -77,13 +97,13 @@ function DayCell({ shifts, date }: { shifts: ShiftDto[]; date: Date }) {
   return (
     <div className="flex flex-col gap-1.5">
       {dayShifts.map((shift) => (
-        <ShiftPill key={shift.id} shift={shift} />
+        <ShiftPill key={shift.id} shift={shift} onClick={onShiftClick} />
       ))}
     </div>
   )
 }
 
-export function RosterGrid({ employees, weekStart }: RosterGridProps) {
+export function RosterGrid({ employees, weekStart, onShiftClick }: RosterGridProps) {
   const weekDays = getWeekDays(weekStart)
 
   return (
@@ -139,7 +159,11 @@ export function RosterGrid({ employees, weekStart }: RosterGridProps) {
                     )}
                   >
                     <div className="flex items-center justify-center min-h-[36px]">
-                      <DayCell shifts={employee.shifts} date={day} />
+                      <DayCell
+                        shifts={employee.shifts}
+                        date={day}
+                        onShiftClick={onShiftClick}
+                      />
                     </div>
                   </td>
                 ))}

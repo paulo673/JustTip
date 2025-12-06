@@ -11,4 +11,9 @@ public class EmployeeRepository(AppDbContext context) : IEmployeeRepository
     {
         return await context.Employees.FirstOrDefaultAsync(e => e.Id == id);
     }
+
+    public async Task<IEnumerable<Employee>> GetAllAsync()
+    {
+        return await context.Employees.OrderBy(e => e.Name).ToListAsync();
+    }
 }

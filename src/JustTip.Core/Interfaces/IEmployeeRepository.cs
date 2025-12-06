@@ -5,4 +5,5 @@ namespace JustTip.Core.Interfaces;
 public interface IEmployeeRepository
 {
     Task<Employee?> GetByIdAsync(int id);
+    Task<IEnumerable<Employee>> GetAllAsync();
 }
