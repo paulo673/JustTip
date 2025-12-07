@@ -3,6 +3,14 @@ import { cn } from '../../lib/utils'
 import { getWeekDays } from '../../hooks/useRoster'
 import type { EmployeeRosterDto, ShiftDto } from '../../types/roster'
 
+function formatHours(hours: number): string {
+  if (hours === 0) return '0h'
+  const wholeHours = Math.floor(hours)
+  const minutes = Math.round((hours - wholeHours) * 60)
+  if (minutes === 0) return `${wholeHours}h`
+  return `${wholeHours}h ${minutes}m`
+}
+
 interface RosterGridProps {
   employees: EmployeeRosterDto[]
   weekStart: Date
@@ -127,12 +135,15 @@ export function RosterGrid({ employees, weekStart, onShiftClick }: RosterGridPro
                 {format(day, 'EEE dd')}
               </th>
             ))}
+            <th className="py-4 px-4 text-center text-sm font-semibold text-slate-600 w-28">
+              Total Hours
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
           {employees.length === 0 ? (
             <tr>
-              <td colSpan={8} className="py-16 text-center">
+              <td colSpan={9} className="py-16 text-center">
                 <p className="text-slate-400 font-medium">No employees or shifts found for this week.</p>
               </td>
             </tr>
@@ -167,6 +178,11 @@ export function RosterGrid({ employees, weekStart, onShiftClick }: RosterGridPro
                     </div>
                   </td>
                 ))}
+                <td className="py-4 px-4 text-center align-middle">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-sm font-semibold">
+                    {formatHours(employee.totalHours)}
+                  </span>
+                </td>
               </tr>
             ))
           )}

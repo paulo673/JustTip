@@ -8,19 +8,37 @@ namespace JustTip.Core.Services;
 public class RosterService(IShiftRepository shiftRepository, IEmployeeRepository employeeRepository)
     : IRosterService
 {
-    public async Task<IEnumerable<ShiftDto>> GetWeeklyRosterAsync(DateOnly startDate)
+    public async Task<WeeklyRosterDto> GetWeeklyRosterAsync(DateOnly startDate)
     {
         var endDate = startDate.AddDays(6);
         var shifts = await shiftRepository.GetShiftsByDateRangeAsync(startDate, endDate);
 
-        return shifts.Select(s => new ShiftDto(
-            s.Id,
-            s.EmployeeId,
-            s.Employee?.Name ?? string.Empty,
-            s.Date,
-            s.StartTime,
-            s.EndTime
-        ));
+        var employeeGroups = shifts
+            .GroupBy(s => new { s.EmployeeId, EmployeeName = s.Employee?.Name ?? string.Empty })
+            .Select(g =>
+            {
+                var employeeShifts = g.Select(s => new ShiftDto(
+                    s.Id,
+                    s.EmployeeId,
+                    s.Employee?.Name ?? string.Empty,
+                    s.Date,
+                    s.StartTime,
+                    s.EndTime
+                )).ToList();
+
+                var totalHours = (decimal)g.Sum(s => s.DurationInHours);
+
+                return new EmployeeRosterDto(
+                    g.Key.EmployeeId,
+                    g.Key.EmployeeName,
+                    employeeShifts,
+                    Math.Round(totalHours, 2)
+                );
+            })
+            .OrderBy(e => e.Name)
+            .ToList();
+
+        return new WeeklyRosterDto(employeeGroups);
     }
 
     public async Task<ShiftDto?> GetShiftByIdAsync(int id)

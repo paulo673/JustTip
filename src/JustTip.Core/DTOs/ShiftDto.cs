@@ -8,3 +8,14 @@ public record ShiftDto(
     TimeOnly StartTime,
     TimeOnly EndTime
 );
+
+public record EmployeeRosterDto(
+    int EmployeeId,
+    string Name,
+    IReadOnlyList<ShiftDto> Shifts,
+    decimal TotalHours
+);
+
+public record WeeklyRosterDto(
+    IReadOnlyList<EmployeeRosterDto> Employees
+);

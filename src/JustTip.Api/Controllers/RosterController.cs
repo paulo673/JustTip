@@ -10,10 +10,10 @@ namespace JustTip.Api.Controllers;
 public class RosterController(IRosterService rosterService) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ShiftDto>>> GetWeeklyRoster([FromQuery] DateOnly startDate)
+    public async Task<ActionResult<WeeklyRosterDto>> GetWeeklyRoster([FromQuery] DateOnly startDate)
     {
-        var shifts = await rosterService.GetWeeklyRosterAsync(startDate);
-        return Ok(shifts);
+        var roster = await rosterService.GetWeeklyRosterAsync(startDate);
+        return Ok(roster);
     }
 
     [HttpGet("shifts/{id}")]

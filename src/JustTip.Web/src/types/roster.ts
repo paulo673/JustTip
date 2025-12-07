@@ -11,6 +11,11 @@ export interface EmployeeRosterDto {
   employeeId: number
   name: string
   shifts: ShiftDto[]
+  totalHours: number
+}
+
+export interface WeeklyRosterDto {
+  employees: EmployeeRosterDto[]
 }
 
 export interface RosterData {

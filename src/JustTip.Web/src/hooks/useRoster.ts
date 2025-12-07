@@ -1,28 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { format, startOfWeek, addDays } from 'date-fns'
 import { api } from '../lib/api'
-import type { ShiftDto, EmployeeRosterDto, RosterData } from '../types/roster'
+import type { WeeklyRosterDto, RosterData } from '../types/roster'
 
 async function fetchRoster(weekStart: Date): Promise<RosterData> {
   const formattedDate = format(weekStart, 'yyyy-MM-dd')
-  const response = await api.get<ShiftDto[]>(`/roster?startDate=${formattedDate}`)
-  const shifts = response.data
-
-  const employeeMap = new Map<number, EmployeeRosterDto>()
-
-  shifts.forEach((shift) => {
-    if (!employeeMap.has(shift.employeeId)) {
-      employeeMap.set(shift.employeeId, {
-        employeeId: shift.employeeId,
-        name: shift.employeeName,
-        shifts: [],
-      })
-    }
-    employeeMap.get(shift.employeeId)!.shifts.push(shift)
-  })
+  const response = await api.get<WeeklyRosterDto>(`/roster?startDate=${formattedDate}`)
 
   return {
-    employees: Array.from(employeeMap.values()),
+    employees: response.data.employees,
     weekStart,
     weekEnd: addDays(weekStart, 6),
   }
