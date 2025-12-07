@@ -113,7 +113,7 @@ The easiest way to run JustTip is using Docker Compose, which starts all service
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/paulo673/JustTip.git
 cd JustTip
 
 # Start all services
