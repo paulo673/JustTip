@@ -1,0 +1,13 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/JustTip.Api/Dockerfile
+    container_name: justtip-api
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=justtip_db;Username=postgres;Password=postgres
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5000:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
