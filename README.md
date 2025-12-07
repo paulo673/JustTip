@@ -16,6 +16,7 @@ A full-stack Roster & Tip Management Application built with Clean Architecture. 
 - [API Endpoints](#api-endpoints)
 - [Project Structure](#project-structure)
 - [Testing](#testing)
+- [Future Improvements](#future-improvements)
 
 ## Purpose
 
@@ -346,3 +347,43 @@ dotnet test --collect:"XPlat Code Coverage"
 - Multiple shifts per employee per day are summed correctly
 - Days without shifts don't affect tip distribution
 - Proper rounding to 2 decimal places
+
+## Future Improvements
+
+Given more time, the following enhancements would be implemented:
+
+### Tip Distribution Configuration
+
+- **Simple Weekly Pooling Option**: Implement an alternative calculation mode (Total Tips / Total Employees) for establishments that prefer this policy
+- **Configurable per Establishment**: Allow each business to choose their preferred tip distribution method
+
+### Roster UX Enhancements
+
+- **Quick Shift Creation**: Click on empty cells for employees who already have shifts that week to quickly add new shifts
+- **Drag and Drop**: Move shifts from one day to another via drag and drop
+_- **Improved Date/Time Picker**: Better UX for the date and time selection component_
+- **Responsive Design**: Full mobile responsiveness across all views
+
+### Week Navigation Persistence
+
+- **A/B Test for Week Selector**: Validate the implementation of a header-based week selector component that persists the selected week when navigating between Roster and Tips views
+
+### Key Features Roadmap
+
+**1. Real-Time "My Wallet"**
+
+When a manager clicks "Save" on Tuesday night, Alice's phone vibrates: "You earned €42.50 in tips today (Average €8.50/hour)!"
+
+This creates immediate dopamine and satisfaction for hard work.
+
+**2. Schedule Gamification**
+
+Employees can see earnings forecasts: "Last Friday averaged €15/hour. You're scheduled for this Friday!"
+
+This reduces no-shows and increases competition for busy shifts.
+
+**3. Full Transparency (Audit Trail)**
+
+Employees see the exact math: "Total collected: €500 / Total team hours: 50h = Point value: €10/h. Your hours: 6h"
+
+This eliminates complaints and tense meetings about payments.
