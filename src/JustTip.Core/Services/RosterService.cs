@@ -62,13 +62,7 @@ public class RosterService(IShiftRepository shiftRepository, IEmployeeRepository
             throw new ShiftOverlapException();
         }
 
-        var shift = new Shift
-        {
-            EmployeeId = request.EmployeeId,
-            Date = request.Date,
-            StartTime = request.StartTime,
-            EndTime = request.EndTime
-        };
+        var shift = new Shift(request.EmployeeId, request.Date, request.StartTime, request.EndTime);
 
         var createdShift = await shiftRepository.AddAsync(shift);
 
@@ -108,10 +102,7 @@ public class RosterService(IShiftRepository shiftRepository, IEmployeeRepository
             throw new ShiftOverlapException();
         }
 
-        shift.EmployeeId = request.EmployeeId;
-        shift.Date = request.Date;
-        shift.StartTime = request.StartTime;
-        shift.EndTime = request.EndTime;
+        shift.Update(request.EmployeeId, request.Date, request.StartTime, request.EndTime);
 
         await shiftRepository.UpdateAsync(shift);
 

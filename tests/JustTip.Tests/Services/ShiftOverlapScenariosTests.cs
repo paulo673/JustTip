@@ -13,7 +13,7 @@ public class ShiftOverlapScenariosTests
     private readonly IEmployeeRepository _employeeRepository;
     private readonly RosterService _sut;
 
-    private readonly Employee _testEmployee = new() { Id = 1, Name = "John Doe" };
+    private readonly Employee _testEmployee = new("John Doe", 1);
     private readonly DateOnly _testDate = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
 
     public ShiftOverlapScenariosTests()
@@ -58,8 +58,7 @@ public class ShiftOverlapScenariosTests
         _shiftRepository.AddAsync(Arg.Any<Shift>()).Returns(callInfo =>
         {
             var shift = callInfo.Arg<Shift>();
-            shift.Id = 1;
-            return shift;
+            return new Shift(shift.EmployeeId, shift.Date, shift.StartTime, shift.EndTime, 1);
         });
 
         if (shouldOverlap)
@@ -80,8 +79,8 @@ public class ShiftOverlapScenariosTests
     [Fact]
     public async Task CreateShiftAsync_DifferentEmployees_ShouldNotConflict()
     {
-        var employee1 = new Employee { Id = 1, Name = "John" };
-        var employee2 = new Employee { Id = 2, Name = "Jane" };
+        var employee1 = new Employee("John", 1);
+        var employee2 = new Employee("Jane", 2);
 
         _employeeRepository.GetByIdAsync(employee1.Id).Returns(employee1);
         _employeeRepository.GetByIdAsync(employee2.Id).Returns(employee2);
@@ -106,8 +105,7 @@ public class ShiftOverlapScenariosTests
         _shiftRepository.AddAsync(Arg.Any<Shift>()).Returns(callInfo =>
         {
             var shift = callInfo.Arg<Shift>();
-            shift.Id = 1;
-            return shift;
+            return new Shift(shift.EmployeeId, shift.Date, shift.StartTime, shift.EndTime, 1);
         });
 
         var result1 = await _sut.CreateShiftAsync(request1);
@@ -144,8 +142,7 @@ public class ShiftOverlapScenariosTests
         _shiftRepository.AddAsync(Arg.Any<Shift>()).Returns(callInfo =>
         {
             var shift = callInfo.Arg<Shift>();
-            shift.Id = 1;
-            return shift;
+            return new Shift(shift.EmployeeId, shift.Date, shift.StartTime, shift.EndTime, 1);
         });
 
         var result1 = await _sut.CreateShiftAsync(request1);
@@ -183,8 +180,7 @@ public class ShiftOverlapScenariosTests
         _shiftRepository.AddAsync(Arg.Any<Shift>()).Returns(callInfo =>
         {
             var shift = callInfo.Arg<Shift>();
-            shift.Id = 1;
-            return shift;
+            return new Shift(shift.EmployeeId, shift.Date, shift.StartTime, shift.EndTime, 1);
         });
 
         if (shouldOverlap)

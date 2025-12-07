@@ -2,7 +2,15 @@ namespace JustTip.Core.Entities;
 
 public class Employee : BaseEntity
 {
-    public required string Name { get; set; }
+    private Employee() { Name = string.Empty; }
 
-    public ICollection<Shift> Shifts { get; set; } = [];
+    public Employee(string name, int id = 0)
+    {
+        Id = id;
+        Name = name;
+    }
+
+    public string Name { get; private set; }
+
+    public ICollection<Shift> Shifts { get; private set; } = [];
 }

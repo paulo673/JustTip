@@ -29,19 +29,19 @@ public class TipCalculationServiceTests
     [Fact]
     public async Task CalculateWeeklyPayoutAsync_HighLowDayScenario_ShouldPayProportionallyPerDay()
     {
-        var alice = new Employee { Id = 1, Name = "Alice" };
-        var bob = new Employee { Id = 2, Name = "Bob" };
+        var alice = new Employee("Alice", 1);
+        var bob = new Employee("Bob", 2);
 
         var shifts = new List<Shift>
         {
-            new() { Id = 1, EmployeeId = 1, Employee = alice, Date = _tuesday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(14, 0) },
-            new() { Id = 2, EmployeeId = 2, Employee = bob, Date = _friday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(14, 0) }
+            new(1, _tuesday, new TimeOnly(9, 0), new TimeOnly(14, 0), 1, alice),
+            new(2, _friday, new TimeOnly(9, 0), new TimeOnly(14, 0), 2, bob)
         };
 
         var tips = new List<DailyTipPool>
         {
-            new() { Id = 1, Date = _tuesday, Amount = 10m },
-            new() { Id = 2, Date = _friday, Amount = 100m }
+            new(_tuesday, 10m, 1),
+            new(_friday, 100m, 2)
         };
 
         var weekEnd = _weekStart.AddDays(6);
@@ -64,18 +64,18 @@ public class TipCalculationServiceTests
     [Fact]
     public async Task CalculateWeeklyPayoutAsync_MixedShiftsSameDay_ShouldDivideProportionallyByHours()
     {
-        var alice = new Employee { Id = 1, Name = "Alice" };
-        var bob = new Employee { Id = 2, Name = "Bob" };
+        var alice = new Employee("Alice", 1);
+        var bob = new Employee("Bob", 2);
 
         var shifts = new List<Shift>
         {
-            new() { Id = 1, EmployeeId = 1, Employee = alice, Date = _friday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(14, 0) },
-            new() { Id = 2, EmployeeId = 2, Employee = bob, Date = _friday, StartTime = new TimeOnly(14, 0), EndTime = new TimeOnly(19, 0) }
+            new(1, _friday, new TimeOnly(9, 0), new TimeOnly(14, 0), 1, alice),
+            new(2, _friday, new TimeOnly(14, 0), new TimeOnly(19, 0), 2, bob)
         };
 
         var tips = new List<DailyTipPool>
         {
-            new() { Id = 1, Date = _friday, Amount = 100m }
+            new(_friday, 100m, 1)
         };
 
         var weekEnd = _weekStart.AddDays(6);
@@ -97,18 +97,18 @@ public class TipCalculationServiceTests
     [Fact]
     public async Task CalculateWeeklyPayoutAsync_UnequalHoursSameDay_ShouldDivideProportionally()
     {
-        var alice = new Employee { Id = 1, Name = "Alice" };
-        var bob = new Employee { Id = 2, Name = "Bob" };
+        var alice = new Employee("Alice", 1);
+        var bob = new Employee("Bob", 2);
 
         var shifts = new List<Shift>
         {
-            new() { Id = 1, EmployeeId = 1, Employee = alice, Date = _friday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(12, 0) },
-            new() { Id = 2, EmployeeId = 2, Employee = bob, Date = _friday, StartTime = new TimeOnly(12, 0), EndTime = new TimeOnly(18, 0) }
+            new(1, _friday, new TimeOnly(9, 0), new TimeOnly(12, 0), 1, alice),
+            new(2, _friday, new TimeOnly(12, 0), new TimeOnly(18, 0), 2, bob)
         };
 
         var tips = new List<DailyTipPool>
         {
-            new() { Id = 1, Date = _friday, Amount = 90m }
+            new(_friday, 90m, 1)
         };
 
         var weekEnd = _weekStart.AddDays(6);
@@ -127,17 +127,17 @@ public class TipCalculationServiceTests
     [Fact]
     public async Task CalculateWeeklyPayoutAsync_MultipleShiftsSameEmployeeSameDay_ShouldSumHours()
     {
-        var alice = new Employee { Id = 1, Name = "Alice" };
+        var alice = new Employee("Alice", 1);
 
         var shifts = new List<Shift>
         {
-            new() { Id = 1, EmployeeId = 1, Employee = alice, Date = _friday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(12, 0) },
-            new() { Id = 2, EmployeeId = 1, Employee = alice, Date = _friday, StartTime = new TimeOnly(14, 0), EndTime = new TimeOnly(17, 0) }
+            new(1, _friday, new TimeOnly(9, 0), new TimeOnly(12, 0), 1, alice),
+            new(1, _friday, new TimeOnly(14, 0), new TimeOnly(17, 0), 2, alice)
         };
 
         var tips = new List<DailyTipPool>
         {
-            new() { Id = 1, Date = _friday, Amount = 60m }
+            new(_friday, 60m, 1)
         };
 
         var weekEnd = _weekStart.AddDays(6);
@@ -156,20 +156,20 @@ public class TipCalculationServiceTests
     [Fact]
     public async Task CalculateWeeklyPayoutAsync_ComplexWeekScenario_ShouldCalculateDailyAndSum()
     {
-        var alice = new Employee { Id = 1, Name = "Alice" };
-        var bob = new Employee { Id = 2, Name = "Bob" };
+        var alice = new Employee("Alice", 1);
+        var bob = new Employee("Bob", 2);
 
         var shifts = new List<Shift>
         {
-            new() { Id = 1, EmployeeId = 1, Employee = alice, Date = _tuesday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(14, 0) },
-            new() { Id = 2, EmployeeId = 1, Employee = alice, Date = _friday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(14, 0) },
-            new() { Id = 3, EmployeeId = 2, Employee = bob, Date = _friday, StartTime = new TimeOnly(14, 0), EndTime = new TimeOnly(19, 0) }
+            new(1, _tuesday, new TimeOnly(9, 0), new TimeOnly(14, 0), 1, alice),
+            new(1, _friday, new TimeOnly(9, 0), new TimeOnly(14, 0), 2, alice),
+            new(2, _friday, new TimeOnly(14, 0), new TimeOnly(19, 0), 3, bob)
         };
 
         var tips = new List<DailyTipPool>
         {
-            new() { Id = 1, Date = _tuesday, Amount = 20m },
-            new() { Id = 2, Date = _friday, Amount = 100m }
+            new(_tuesday, 20m, 1),
+            new(_friday, 100m, 2)
         };
 
         var weekEnd = _weekStart.AddDays(6);
@@ -190,17 +190,17 @@ public class TipCalculationServiceTests
     [Fact]
     public async Task CalculateWeeklyPayoutAsync_DayWithTipsButNoShifts_ShouldIgnoreThatDay()
     {
-        var alice = new Employee { Id = 1, Name = "Alice" };
+        var alice = new Employee("Alice", 1);
 
         var shifts = new List<Shift>
         {
-            new() { Id = 1, EmployeeId = 1, Employee = alice, Date = _tuesday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(14, 0) }
+            new(1, _tuesday, new TimeOnly(9, 0), new TimeOnly(14, 0), 1, alice)
         };
 
         var tips = new List<DailyTipPool>
         {
-            new() { Id = 1, Date = _tuesday, Amount = 50m },
-            new() { Id = 2, Date = _friday, Amount = 100m }
+            new(_tuesday, 50m, 1),
+            new(_friday, 100m, 2)
         };
 
         var weekEnd = _weekStart.AddDays(6);
@@ -216,17 +216,17 @@ public class TipCalculationServiceTests
     [Fact]
     public async Task CalculateWeeklyPayoutAsync_DayWithShiftsButNoTips_ShouldContributeZeroToThatDay()
     {
-        var alice = new Employee { Id = 1, Name = "Alice" };
+        var alice = new Employee("Alice", 1);
 
         var shifts = new List<Shift>
         {
-            new() { Id = 1, EmployeeId = 1, Employee = alice, Date = _tuesday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(14, 0) },
-            new() { Id = 2, EmployeeId = 1, Employee = alice, Date = _friday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(14, 0) }
+            new(1, _tuesday, new TimeOnly(9, 0), new TimeOnly(14, 0), 1, alice),
+            new(1, _friday, new TimeOnly(9, 0), new TimeOnly(14, 0), 2, alice)
         };
 
         var tips = new List<DailyTipPool>
         {
-            new() { Id = 1, Date = _friday, Amount = 100m }
+            new(_friday, 100m, 1)
         };
 
         var weekEnd = _weekStart.AddDays(6);
@@ -245,7 +245,7 @@ public class TipCalculationServiceTests
     {
         var tips = new List<DailyTipPool>
         {
-            new() { Id = 1, Date = _friday, Amount = 100m }
+            new(_friday, 100m, 1)
         };
 
         var weekEnd = _weekStart.AddDays(6);
@@ -262,11 +262,11 @@ public class TipCalculationServiceTests
     [Fact]
     public async Task CalculateWeeklyPayoutAsync_NoTips_ShouldReturnZeroPayouts()
     {
-        var alice = new Employee { Id = 1, Name = "Alice" };
+        var alice = new Employee("Alice", 1);
 
         var shifts = new List<Shift>
         {
-            new() { Id = 1, EmployeeId = 1, Employee = alice, Date = _friday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(14, 0) }
+            new(1, _friday, new TimeOnly(9, 0), new TimeOnly(14, 0), 1, alice)
         };
 
         var weekEnd = _weekStart.AddDays(6);
@@ -284,20 +284,20 @@ public class TipCalculationServiceTests
     [Fact]
     public async Task CalculateWeeklyPayoutAsync_ShouldRoundToTwoDecimalPlaces()
     {
-        var alice = new Employee { Id = 1, Name = "Alice" };
-        var bob = new Employee { Id = 2, Name = "Bob" };
-        var charlie = new Employee { Id = 3, Name = "Charlie" };
+        var alice = new Employee("Alice", 1);
+        var bob = new Employee("Bob", 2);
+        var charlie = new Employee("Charlie", 3);
 
         var shifts = new List<Shift>
         {
-            new() { Id = 1, EmployeeId = 1, Employee = alice, Date = _friday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(12, 0) },
-            new() { Id = 2, EmployeeId = 2, Employee = bob, Date = _friday, StartTime = new TimeOnly(12, 0), EndTime = new TimeOnly(15, 0) },
-            new() { Id = 3, EmployeeId = 3, Employee = charlie, Date = _friday, StartTime = new TimeOnly(15, 0), EndTime = new TimeOnly(18, 0) }
+            new(1, _friday, new TimeOnly(9, 0), new TimeOnly(12, 0), 1, alice),
+            new(2, _friday, new TimeOnly(12, 0), new TimeOnly(15, 0), 2, bob),
+            new(3, _friday, new TimeOnly(15, 0), new TimeOnly(18, 0), 3, charlie)
         };
 
         var tips = new List<DailyTipPool>
         {
-            new() { Id = 1, Date = _friday, Amount = 100m }
+            new(_friday, 100m, 1)
         };
 
         var weekEnd = _weekStart.AddDays(6);

@@ -14,15 +14,11 @@ public class TipRepository(AppDbContext context) : ITipRepository
 
         if (existingTip is not null)
         {
-            existingTip.Amount = amount;
+            existingTip.UpdateAmount(amount);
         }
         else
         {
-            context.DailyTipPools.Add(new DailyTipPool
-            {
-                Date = date,
-                Amount = amount
-            });
+            context.DailyTipPools.Add(new DailyTipPool(date, amount));
         }
 
         await context.SaveChangesAsync();

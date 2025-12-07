@@ -14,11 +14,11 @@ public static class DbInitializer
 
         var employees = new List<Employee>
         {
-            new() { Name = "Alice Johnson" },
-            new() { Name = "Bob Smith" },
-            new() { Name = "Carlos Rodriguez" },
-            new() { Name = "Diana Chen" },
-            new() { Name = "Eduardo Silva" }
+            new("Alice Johnson"),
+            new("Bob Smith"),
+            new("Carlos Rodriguez"),
+            new("Diana Chen"),
+            new("Eduardo Silva")
         };
 
         await context.Employees.AddRangeAsync(employees);
@@ -38,65 +38,17 @@ public static class DbInitializer
 
             if (dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday)
             {
-                shifts.Add(new Shift
-                {
-                    EmployeeId = employees[0].Id,
-                    Date = date,
-                    StartTime = new TimeOnly(10, 0),
-                    EndTime = new TimeOnly(18, 0)
-                });
-                shifts.Add(new Shift
-                {
-                    EmployeeId = employees[1].Id,
-                    Date = date,
-                    StartTime = new TimeOnly(12, 0),
-                    EndTime = new TimeOnly(20, 0)
-                });
-                shifts.Add(new Shift
-                {
-                    EmployeeId = employees[2].Id,
-                    Date = date,
-                    StartTime = new TimeOnly(14, 0),
-                    EndTime = new TimeOnly(22, 0)
-                });
+                shifts.Add(new Shift(employees[0].Id, date, new TimeOnly(10, 0), new TimeOnly(18, 0)));
+                shifts.Add(new Shift(employees[1].Id, date, new TimeOnly(12, 0), new TimeOnly(20, 0)));
+                shifts.Add(new Shift(employees[2].Id, date, new TimeOnly(14, 0), new TimeOnly(22, 0)));
             }
             else
             {
-                shifts.Add(new Shift
-                {
-                    EmployeeId = employees[0].Id,
-                    Date = date,
-                    StartTime = new TimeOnly(9, 0),
-                    EndTime = new TimeOnly(17, 0)
-                });
-                shifts.Add(new Shift
-                {
-                    EmployeeId = employees[1].Id,
-                    Date = date,
-                    StartTime = new TimeOnly(10, 0),
-                    EndTime = new TimeOnly(18, 0)
-                });
-                shifts.Add(new Shift
-                {
-                    EmployeeId = employees[2].Id,
-                    Date = date,
-                    StartTime = new TimeOnly(11, 0),
-                    EndTime = new TimeOnly(19, 0)
-                });
-                shifts.Add(new Shift
-                {
-                    EmployeeId = employees[3].Id,
-                    Date = date,
-                    StartTime = new TimeOnly(14, 0),
-                    EndTime = new TimeOnly(22, 0)
-                });
-                shifts.Add(new Shift
-                {
-                    EmployeeId = employees[4].Id,
-                    Date = date,
-                    StartTime = new TimeOnly(16, 0),
-                    EndTime = new TimeOnly(23, 0)
-                });
+                shifts.Add(new Shift(employees[0].Id, date, new TimeOnly(9, 0), new TimeOnly(17, 0)));
+                shifts.Add(new Shift(employees[1].Id, date, new TimeOnly(10, 0), new TimeOnly(18, 0)));
+                shifts.Add(new Shift(employees[2].Id, date, new TimeOnly(11, 0), new TimeOnly(19, 0)));
+                shifts.Add(new Shift(employees[3].Id, date, new TimeOnly(14, 0), new TimeOnly(22, 0)));
+                shifts.Add(new Shift(employees[4].Id, date, new TimeOnly(16, 0), new TimeOnly(23, 0)));
             }
         }
 
@@ -114,7 +66,7 @@ public static class DbInitializer
                 _ => 200.00m
             };
 
-            dailyTips.Add(new DailyTipPool { Date = date, Amount = amount });
+            dailyTips.Add(new DailyTipPool(date, amount));
         }
 
         await context.DailyTipPools.AddRangeAsync(dailyTips);

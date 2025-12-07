@@ -13,7 +13,7 @@ public class RosterServiceOverlappingTests
     private readonly IEmployeeRepository _employeeRepository;
     private readonly RosterService _sut;
 
-    private readonly Employee _testEmployee = new() { Id = 1, Name = "John Doe" };
+    private readonly Employee _testEmployee = new("John Doe", 1);
     private readonly DateOnly _testDate = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
 
     public RosterServiceOverlappingTests()
@@ -42,8 +42,7 @@ public class RosterServiceOverlappingTests
         _shiftRepository.AddAsync(Arg.Any<Shift>()).Returns(callInfo =>
         {
             var shift = callInfo.Arg<Shift>();
-            shift.Id = 1;
-            return shift;
+            return new Shift(shift.EmployeeId, shift.Date, shift.StartTime, shift.EndTime, 1);
         });
 
         var result = await _sut.CreateShiftAsync(request);
@@ -75,15 +74,14 @@ public class RosterServiceOverlappingTests
     public async Task UpdateShiftAsync_WhenNoOverlap_ShouldUpdateShift()
     {
         var shiftId = 1;
-        var existingShift = new Shift
-        {
-            Id = shiftId,
-            EmployeeId = _testEmployee.Id,
-            Employee = _testEmployee,
-            Date = _testDate,
-            StartTime = new TimeOnly(9, 0),
-            EndTime = new TimeOnly(12, 0)
-        };
+        var existingShift = new Shift(
+            _testEmployee.Id,
+            _testDate,
+            new TimeOnly(9, 0),
+            new TimeOnly(12, 0),
+            shiftId,
+            _testEmployee
+        );
 
         var request = new UpdateShiftRequest(
             EmployeeId: _testEmployee.Id,
@@ -109,15 +107,14 @@ public class RosterServiceOverlappingTests
     public async Task UpdateShiftAsync_WhenOverlapExists_ShouldThrowShiftOverlapException()
     {
         var shiftId = 1;
-        var existingShift = new Shift
-        {
-            Id = shiftId,
-            EmployeeId = _testEmployee.Id,
-            Employee = _testEmployee,
-            Date = _testDate,
-            StartTime = new TimeOnly(9, 0),
-            EndTime = new TimeOnly(12, 0)
-        };
+        var existingShift = new Shift(
+            _testEmployee.Id,
+            _testDate,
+            new TimeOnly(9, 0),
+            new TimeOnly(12, 0),
+            shiftId,
+            _testEmployee
+        );
 
         var request = new UpdateShiftRequest(
             EmployeeId: _testEmployee.Id,
@@ -139,15 +136,14 @@ public class RosterServiceOverlappingTests
     public async Task UpdateShiftAsync_WhenUpdatingSameShiftWithSameTime_ShouldExcludeItselfFromOverlapCheck()
     {
         var shiftId = 1;
-        var existingShift = new Shift
-        {
-            Id = shiftId,
-            EmployeeId = _testEmployee.Id,
-            Employee = _testEmployee,
-            Date = _testDate,
-            StartTime = new TimeOnly(9, 0),
-            EndTime = new TimeOnly(17, 0)
-        };
+        var existingShift = new Shift(
+            _testEmployee.Id,
+            _testDate,
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0),
+            shiftId,
+            _testEmployee
+        );
 
         var request = new UpdateShiftRequest(
             EmployeeId: _testEmployee.Id,
